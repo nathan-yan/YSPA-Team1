@@ -43,8 +43,8 @@ configuration = 'VB' # or "VR"
 #images = ["SN2019IEE_V_comb.fit", "SN2019IEE_B_comb.new"]
 
 #base = "SN2019iee_data/july 11 ALL(t21)/"
-base = "starcluster_data/"
-fname = "ngc225_$_comb"
+base = "tabbys_star/"
+fname = "$_TSfinal"
 
 field = image.Image(base + fname.replace('$', configuration[0]) + ".new")
 
@@ -100,7 +100,7 @@ middle = (field.width / 2., field.height / 2.)
 center_coords = field.get_world([middle])[0]
 
 print("Retrieving calibration stars")
-cal_stars = apass_query(center_coords[0], center_coords[1], 0.3)
+cal_stars = apass_query(center_coords[0], center_coords[1], 2)
 
 print("Found %d stars within 0.2 degree radius" % len(cal_stars))
 print("Matching stars")

@@ -127,6 +127,10 @@ plt.title("CMD with Annulus")
 plt.xlim(-0.25, 2.)
 plt.ylim(reversed([8., 17.5]))
 
+print("Saving CMD data")
+np.savetxt("ngc225_BV", BV)
+np.savetxt("ngc225_V", V)
+
 plt.show()
 
 plt.imshow(dataB - medians[0])
