@@ -1,0 +1,8 @@
+student@NUC34:~/Desktop$ python blog_post.py
+The Great Grind
+
+The air today had a certain sense of urgency. Two tasks awaited the intrepid YSPA students, which stood ahead like grand intellectual behemoths. Immediately after dinner, we would have to present our progress reports to the teacher assistants, and then at night, the scramble to print our problem sets would begin. No one in my table group wanted to say it, but we all knew that today was going to be a difficult one.
+
+The morning started calm, and Dr. Faison presented his long awaited proof for the infamous calculus inquiry from yesterday: "how many people should you date before you marry?" After lunch, however, the computer lab was bustling with the sound of 32 students rushing to finish their reports before dinner, breaking only to listen to a fascinating guest lecture about exoplanets by Dr. Chris Spalding. Dinner was up before we knew it, forcing us to print our half-finished reports and sprint down to the dorms for roll-call (I missed it).
+
+With one task down, we could now focus on our problem set. The conversation shifted from one problem to another. Under the sea of voices one could hear the scribbling of pencils on paper and furious typing. We grew more dreary as the sprint stretched past midnight, and hoped desperately that our Landolt stars would give us good regression lines. After finally finishing, I can just say: don't procrastinate, YSPA 2020. This was not a pleasant experience.

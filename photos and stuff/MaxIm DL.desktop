@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=MaxIm DL
+Exec=env WINEPREFIX="/home/student/.wine" wine-stable C:\\\\Program\\ Files\\ \\(x86\\)\\\\Diffraction\\ Limited\\\\MaxIm\\ DL\\ 3\\\\MaxIm_DL.exe 
+Type=Application
+StartupNotify=true
+Comment=MaxIm DL
+Path=/home/student/.wine/dosdevices/c:/Program Files (x86)/Diffraction Limited/MaxIm DL 3/
+Icon=36F6__2753D842189A_406D_BB5B_AACA3CAEBF18.3
+StartupWMClass=maxim_dl.exe
