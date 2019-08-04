@@ -60,14 +60,14 @@ img = model(x, y)
 img[5][4] = img[5][3] * 5.2/4.
 
 plt.subplot(2, 2, 1)
-plt.imshow(img, vmin = -40, vmax = 160)
+plt.imshow(img, vmin = -40, vmax = 160, cmap = "gray_r")
 
 plt.subplot(2, 2, 2)
-plt.imshow(galaxy_cutout - img, vmin = -40, vmax = 160)
+plt.imshow(data.data[499:507, 500:510] - img, vmin = -40, vmax = 100, cmap = "gray_r")
 
 means = np.mean(galaxy_cutout, axis = 0)
 plt.subplot(2, 2, 4)
-plt.plot(means)
+plt.imshow(data.data[499:507, 500:510], cmap = "gray_r")
 plt.plot()
 
 

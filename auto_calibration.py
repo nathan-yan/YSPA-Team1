@@ -37,14 +37,14 @@ def apass_query(ra, dec, radius, items = 28):
 
     return Table(star_data, names = header)
 
-configuration = 'VB' # or "VR"
+configuration = 'VR' # or "VR"
 
 #field = image.Image("SN2019IEE_B_comb.new")
 #images = ["SN2019IEE_V_comb.fit", "SN2019IEE_B_comb.new"]
 
 #base = "SN2019iee_data/july 11 ALL(t21)/"
-base = "tabbys_star/"
-fname = "$_TSfinal"
+base = "FINAL SN/6_RV/"
+fname = "LIGHTCURVE6_$"
 
 field = image.Image(base + fname.replace('$', configuration[0]) + ".new")
 
@@ -64,6 +64,38 @@ saveas = base + "cal_data_VB.csv"
 
 images = [image.Image(f) for f in images]
 
+"""
+if len(configuration) == 3:
+    green = image.Image((base + fname.replace('$', 'V') + '.fit')).data.astype(np.float64) + 1
+    red = image.Image((base + fname.replace('$', 'R') + '.fit')).data.astype(np.float64) + 1
+    blue = image.Image((base + fname.replace('$', 'B') + '.fit')).data.astype(np.float64) + 1
+    print(green)
+    #green, red, blue = np.log10(green), np.log10(red), np.log10(blue)
+
+    # Normalize each one wrt to green
+    green_m = np.mean(green)
+    red_m = np.mean(red)
+    blue_m = np.mean(blue)
+
+    red *= green_m / red_m
+    blue *= green_m / blue_m
+
+    plt.imshow(np.clip(green, 1750, 1850) - 1750)
+    plt.show()
+
+    green = np.clip(green, 750, 1050)
+    red = np.clip(red, 750, 1050)
+    blue = np.clip(blue, 750, 1050)
+
+
+    print(green.shape, red.shape, blue.shape)
+    img = np.array(np.stack([green, green, green], axis = -1)).reshape([green.shape[0], green.shape[1], 3]).astype(np.float64)
+    ma = np.max(img)
+    print(ma)
+    plt.imshow(img/ma)
+    plt.show()
+"""
+
 minimum, maximum = 0, 1000
 done = False
 while not done:
@@ -75,7 +107,7 @@ while not done:
             s = [int(i) for i in s.split(',')]
             minimum, maximum = s
             plt.clf()
-            plt.imshow(field.data, cmap = "gray_r", vmin = minimum, vmax = maximum)
+            plt.imshow(sum([f.data for f in images]), cmap = "gray_r", vmin = minimum, vmax = maximum)
             plt.show()
 
         except:
@@ -100,7 +132,7 @@ middle = (field.width / 2., field.height / 2.)
 center_coords = field.get_world([middle])[0]
 
 print("Retrieving calibration stars")
-cal_stars = apass_query(center_coords[0], center_coords[1], 2)
+cal_stars = apass_query(center_coords[0], center_coords[1], 0.3)
 
 print("Found %d stars within 0.2 degree radius" % len(cal_stars))
 print("Matching stars")
@@ -178,7 +210,7 @@ while not done:
         apertureAnn = CircularAnnulus(positions, r_in = R_in, r_out = R_out)
 
         plt.cla()
-        plt.imshow(field.data, cmap = "gray_r", vmin = minimum, vmax = maximum)
+        plt.imshow(sum([f.data for f in images]), cmap = "gray_r", vmin = minimum, vmax = maximum)
         apertureAp.plot()
         apertureAnn.plot()
 
@@ -190,6 +222,7 @@ print("Performing aperture photometry on images")
 phot_tables = [aperture_photometry(f.data - f.median, [apertureAp, apertureAnn]) for f in images]
 #phot_tables2 = aperture_photometry(field - field.median)
 
+ra, dec = [], []
 v_flux = []
 b_flux = []
 V_std = []
@@ -206,13 +239,16 @@ for table in phot_tables:
 
 # Get standard magnitudes
 
-for i, s in enumerate(selected_stars.keys()):
+for i, s in enumerate(selected_stars.keys()[::-1]):
+    i_ = len(selected_stars.keys()) - i - 1
     cal_star_idx = int(selected_stars[s]['idx'])
     cal_star = cal_stars[cal_star_idx]
 
     names = ['Johnson V (V)', 'Sloan r\' (SR)', 'Johnson B (B)', 'Sloan g\' (SG)']
     values = [cal_star[n] for n in names]
     if 'NA' not in values:
+        ra.append(cal_star['RA (deg)'])
+        deg.append(cal_star['Dec (deg)'])
         V_std.append(cal_star[names[0]])
         r_std.append(cal_star[names[1]])
         B_std.append(cal_star[names[2]])
@@ -222,9 +258,9 @@ for i, s in enumerate(selected_stars.keys()):
     else:
 
         for f in range (len(fluxes)):
-            del fluxes[f][i]
+            del fluxes[f][i_]
 
-V_std, B_std, r_std, g_std = np.array(V_std).astype(float), np.array(B_std).astype(float), np.array(r_std).astype(float), np.array(g_std).astype(float)
+ra, deg, V_std, B_std, r_std, g_std = np.array(ra), np.array(deg), np.array(V_std).astype(float), np.array(B_std).astype(float), np.array(r_std).astype(float), np.array(g_std).astype(float)
 
 # Convert r, B, g and V -> R
 VR = 1/1.321 * (g_std - r_std) - (0.278)/1.321 * (B_std - V_std) + (0.219)/1.321
@@ -234,14 +270,14 @@ cal_data = np.stack([np.array(f) for f in fluxes] + [V_std, B_std, R_std, r_std,
 print(cal_data, cal_data.T)
 cal_data = cal_data
 with open(saveas, 'w') as o:
-    headers = []
+    headers = ['RA', 'Dec']
     for i in range (len(images)):
         filter = assignments[i]
         headers.append(filter + "_flux")
 
     headers += ['V_std', 'B_std', 'R_std', 'r_std', 'g_std']
-    o.write(configuration)
-    o.write(",".join(headers))
+    #o.write(configuration)
+    o.write(",".join(headers) + '\n')
     for row in cal_data:
         print(','.join(row.astype(str)))
         o.write(','.join(row.astype(str)) + '\n')

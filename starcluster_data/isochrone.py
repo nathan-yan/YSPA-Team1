@@ -48,8 +48,8 @@ mask=(V<17) & (BV<2) & (-0.1<BV)#MAKE SURE TO CHOOSE VALUES APPROPRIATE FOR YOUR
 xd=BV[mask]
 yd=V[mask]
 
-for isochrone_file in files:
-    #isochrone_file="Isochrones/yapsi_w_X0p602357_Z0p027643.dat"
+for isochrone_file in files[:1]:
+    isochrone_file="Isochrones/yapsi_w_X0p602357_Z0p027643.dat"
     isochrone=Table.read(isochrone_file, format='ascii') #open up one of the files
 
     fit=[]
@@ -109,6 +109,17 @@ for isochrone_file in files:
     d = 10 ** ((offset + 5)/5.)
     print("distance = %s" % d)
 
+mask = np.where(isochrone['col1'] == fit[ichi2min][1])
+data = isochrone[mask]
+
+plt.scatter(BV, V)
+plt.plot(data['col8'], data['col6'] + fit[ichi2min][-1], 'r')
+plt.ylim(reversed(plt.ylim()))
+plt.title("CMD of NGC225 and Best-Fit Isochrone")
+plt.xlabel('Standard B - V')
+plt.ylabel('Standard V')
+plt.show()
+raw_input("")
 """
 isochrone = isochrones[0]
 

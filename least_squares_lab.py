@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     configuration = "VR"
     data = {}
-    with open("FINAL SN/1_RV/cal_data_VR.csv", 'r') as o:
+    with open("FINAL SN/1_RV/cal_data_VB.csv", 'r') as o:
         reader = csv.reader(o)
         headers = reader.next()
         headers = [h.replace(' ', '') for h in headers]
@@ -64,11 +64,19 @@ if __name__ == "__main__":
                 data[headers[i]].append(float(element))
     print(data)
 
+    data['V_flux'] = data['V_flux'][::-1]
+    data['R_flux'] = data['R_flux'][::-1]
+
     if configuration == 'VR':
         large_flux = np.array(data['V_flux'])
         small_flux = np.array(data['R_flux'])
         LARGE_std = np.array(data['V_std'])
         SMALL_std = np.array(data['R_std'])
+    else:
+        large_flux = np.array(data['B_flux'])
+        small_flux = np.array(data['V_flux'])
+        LARGE_std = np.array(data['B_std'])
+        SMALL_std = np.array(data['V_std'])
 
     large = -2.5 * np.log10(large_flux)
     small = -2.5 * np.log10(small_flux)
@@ -77,7 +85,11 @@ if __name__ == "__main__":
     dy = (LARGE_std - SMALL_std)
 
     b_, m_ = linear_fit(dx, dy)
-    print("Slope: %f; Bias: %f" % (b_, m_))
+    #b_ = 2.55
+    #m_ = 1
+    #b_ += 0.1
+    #m_ += 0.02
+    print("Slope: %f; Bias: %f" % (m_, b_))
 
     ma, mi = np.max(dx), np.min(dx)
 
@@ -93,7 +105,7 @@ if __name__ == "__main__":
     dx = LARGE_std - SMALL_std
 
     b_, m_ = linear_fit(dx, dy)
-    print("Slope: %f; Bias: %f" % (b_, m_))
+    print("Slope: %f; Bias: %f" % (m_, b_))
 
     ma, mi = np.max(dx), np.min(dx)
 

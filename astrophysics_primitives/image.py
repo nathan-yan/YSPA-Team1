@@ -18,7 +18,7 @@ class Image(fits.hdu.image.PrimaryHDU):
                           y_flip = True):
         with fits.open(f) as HDU:
             hdu = HDU[0]
-            data = hdu.data.astype(np.int32)
+            data = hdu.data.astype(np.float64)
 
             if y_flip:
                 data = np.flipud(data)
